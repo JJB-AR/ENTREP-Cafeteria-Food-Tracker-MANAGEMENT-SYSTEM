@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
+{
+    public partial class _Default : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Dashboard.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+        }
+    }
+}
