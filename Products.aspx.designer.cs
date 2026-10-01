@@ -14,6 +14,14 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
     public partial class Products
     {
 
+        protected global::System.Web.UI.WebControls.Repeater ProductRepeater;
+
+        protected global::System.Web.UI.WebControls.Literal TotalProductsValue;
+        protected global::System.Web.UI.WebControls.Literal CategoryCountValue;
+        protected global::System.Web.UI.WebControls.Literal ActiveProductsValue;
+        protected global::System.Web.UI.WebControls.Literal LowStockProductsValue;
+        protected global::System.Web.UI.WebControls.Literal ProductCountText;
+
         /// <summary>
         /// hfProductID control.
         /// </summary>

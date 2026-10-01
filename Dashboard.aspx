@@ -1,24 +1,58 @@
 <%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM.Dashboard" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <main class="tracker-dashboard">
+    <main class="tracker-dashboard dashboard-page">
         <table class="dashboard-shell" cellpadding="0" cellspacing="0" role="presentation">
             <tr>
-                <td class="tracker-sidebar">
-                    <table class="brand" cellpadding="0" cellspacing="0" role="presentation"><tr><td><span class="brand-mark">&#127860;</span></td><td><strong>ENTREP</strong><small>FOOD TRACKER</small></td></tr></table>
-                    <nav class="tracker-nav" aria-label="Main navigation">
-                        <a class="active" href="Dashboard.aspx">Overview</a>
-                        <a href="Products.aspx">Products</a>
-                        <a href="Sales.aspx">Sales</a>
-                        <a href="Analytics.aspx">Analytics</a>
-                    </nav>
-                    <div class="target-card"><small>SEMESTER TARGET</small><strong>&#8369;45,000</strong><div class="target-bar"><i></i></div><span>68% achieved</span></div>
-                    <div class="profile-static"><b>JB</b><span><strong>Jonas Balante</strong><small>ENTREP Student</small></span></div>
-                </td>
+                <td class="tracker-sidebar"></td>
                 <td class="tracker-content">
-                    <table class="screen-header" cellpadding="0" cellspacing="0" role="presentation"><tr><td><h1>Good morning, Jonas</h1><p>Here's how your cafeteria products are performing today.</p></td><td align="right"><span class="static-select">&#9636; &nbsp; Sep 8–14, 2026 &#8964;</span> <span class="record-button">&#65291; &nbsp; Record sale</span></td></tr></table>
-                    <table class="dashboard-grid" cellpadding="0" cellspacing="0" role="presentation"><tr><td class="metric-stack"><table class="metric-card" cellpadding="0" cellspacing="0" role="presentation"><tr><td class="metric-icon mint">&#8369;</td><td><small>Total sales</small><strong>&#8369;12,840</strong></td><td class="metric-change">+18.2%</td></tr></table><table class="metric-card" cellpadding="0" cellspacing="0" role="presentation"><tr><td class="metric-icon peach">&#9633;</td><td><small>Items sold</small><strong>486</strong></td><td class="metric-change">+12.5%</td></tr></table><table class="metric-card" cellpadding="0" cellspacing="0" role="presentation"><tr><td class="metric-icon lavender">&#9641;</td><td><small>Transactions</small><strong>214</strong></td><td class="metric-change">+8.4%</td></tr></table></td><td class="panel trend-panel"><table class="panel-heading" cellpadding="0" cellspacing="0" role="presentation"><tr><td><h2>Sales trend</h2><p>Revenue over the last 7 days</p></td><td align="right"><span class="legend"><i></i>Daily revenue</span></td></tr></table><table class="chart" cellpadding="0" cellspacing="0" role="presentation"><tr class="chart-bars"><td><i style="height:54px"></i></td><td><i style="height:70px"></i></td><td><i style="height:61px"></i></td><td><i style="height:91px"></i></td><td><i style="height:80px"></i></td><td><i class="highlight" style="height:114px"></i></td><td><i style="height:109px"></i></td></tr><tr class="chart-labels"><td>Mon</td><td>Tue</td><td>Wed</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr></table></td></tr></table>
-                    <table class="lower-grid" cellpadding="0" cellspacing="0" role="presentation"><tr><td class="panel product-panel"><table class="panel-heading" cellpadding="0" cellspacing="0" role="presentation"><tr><td><h2>Product performance</h2><p>Track quantity sold, revenue and sales frequency</p></td><td align="right"><span class="static-input">&#65291; &nbsp; Add product</span></td></tr></table><table class="product-table" cellpadding="0" cellspacing="0" role="presentation"><colgroup><col style="width:8%" /><col style="width:34%" /><col style="width:10%" /><col style="width:9%" /><col style="width:19%" /><col style="width:12%" /><col style="width:8%" /></colgroup><tr class="table-head"><th colspan="2">PRODUCT</th><th>PRICE</th><th>SOLD</th><th>REVENUE</th><th>TREND</th><th></th></tr><tr class="product-row"><td><b class="product-color orange">&#9832;</b></td><td><strong>Chicken Rice Bowl<small>Meals</small></strong></td><td>&#8369;65</td><td>128</td><td><strong>&#8369;8,320</strong></td><td><em>+24%</em></td><td>•••</td></tr><tr class="product-row"><td><b class="product-color blue">&#9832;</b></td><td><strong>Tuna Sandwich<small>Snacks</small></strong></td><td>&#8369;45</td><td>96</td><td><strong>&#8369;4,320</strong></td><td><em>+18%</em></td><td>•••</td></tr><tr class="product-row"><td><b class="product-color brown">&#9832;</b></td><td><strong>Iced Milo<small>Drinks</small></strong></td><td>&#8369;30</td><td>84</td><td><strong>&#8369;2,520</strong></td><td><em>+9%</em></td><td>•••</td></tr><tr class="product-row"><td><b class="product-color yellow">&#9832;</b></td><td><strong>Banana Cue<small>Snacks</small></strong></td><td>&#8369;25</td><td>72</td><td><strong>&#8369;1,800</strong></td><td><em class="down">−3%</em></td><td>•••</td></tr></table><a class="panel-link" href="Products.aspx">View all 12 products</a></td><td class="panel sales-panel"><table class="panel-heading" cellpadding="0" cellspacing="0" role="presentation"><tr><td><h2>Recent sales</h2><p>Today · 38 transactions</p></td><td align="right"><span class="static-input">&#9776;</span></td></tr></table><table class="sales-list" cellpadding="0" cellspacing="0" role="presentation"><tr class="sale-row"><td><b>&#8369;</b></td><td>#0214<small>2× Rice Bowl, 1× Iced Milo</small></td><td><time>10:42 AM</time></td><td><strong>&#8369;160</strong></td></tr><tr class="sale-row"><td><b>&#8369;</b></td><td>#0213<small>2× Tuna Sandwich</small></td><td><time>10:31 AM</time></td><td><strong>&#8369;90</strong></td></tr><tr class="sale-row"><td><b>&#8369;</b></td><td>#0212<small>3× Banana Cue</small></td><td><time>10:18 AM</time></td><td><strong>&#8369;75</strong></td></tr><tr class="sale-row"><td><b>&#8369;</b></td><td>#0211<small>1× Rice Bowl</small></td><td><time>9:56 AM</time></td><td><strong>&#8369;65</strong></td></tr></table><table class="low-stock" cellpadding="0" cellspacing="0" role="presentation"><tr><td>&#9888;</td><td><strong>Low stock alert</strong><small>Tuna Sandwich has 8 servings left.</small></td><td><a href="Products.aspx">Update</a></td></tr></table><a class="panel-link" href="Sales.aspx">View all transactions</a></td></tr></table>
+                    <header class="screen-header dashboard-page-header">
+                        <div>
+                            <h1>Good morning, <asp:Literal ID="UserDisplayName" runat="server" /></h1>
+                            <p>Here's how your cafeteria products are performing today.</p>
+                        </div>
+                        <div class="header-actions">
+                            <span class="static-select"><asp:Literal ID="DashboardDateRange" runat="server" /></span>
+                            <a class="record-button" href="Sales.aspx">&#65291; &nbsp; Record sale</a>
+                        </div>
+                    </header>
+                    <div class="dashboard-grid">
+                        <section class="metric-stack" aria-label="Today's sales summary">
+                            <div class="metric-card"><span class="metric-icon mint">&#8369;</span><span><small>Total sales</small><strong>&#8369;<asp:Literal ID="TotalSalesValue" runat="server" /></strong></span></div>
+                            <div class="metric-card"><span class="metric-icon peach">&#9633;</span><span><small>Items sold</small><strong><asp:Literal ID="ItemsSoldValue" runat="server" /></strong></span></div>
+                            <div class="metric-card"><span class="metric-icon lavender">&#9641;</span><span><small>Transactions</small><strong><asp:Literal ID="TransactionsValue" runat="server" /></strong></span></div>
+                        </section>
+                        <section class="panel trend-panel">
+                            <div class="panel-heading"><div><h2>Sales trend</h2><p>Revenue over the last 7 days</p></div><span class="legend">&#9679; Daily revenue</span></div>
+                            <div class="daily-chart" role="img" aria-label="Daily revenue for the last seven days">
+                                <asp:Repeater ID="DailySalesRepeater" runat="server">
+                                    <ItemTemplate><div class="chart-column"><i class='<%# Convert.ToBoolean(Eval("IsToday")) ? "highlight" : String.Empty %>' style='height:<%# Eval("BarHeight") %>px' title='&#8369;<%# Eval("Revenue", "{0:N2}") %>'></i><span><%#: Eval("DayLabel") %></span></div></ItemTemplate>
+                                </asp:Repeater>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="lower-grid">
+                        <section class="panel product-panel">
+                            <div class="panel-heading"><div><h2>Product performance</h2><p>Track quantity sold, revenue and sales frequency</p></div><a class="add-button" href="Products.aspx">&#65291; &nbsp; View products</a></div>
+                            <div class="dashboard-product-table">
+                                <div class="dashboard-product-head"><span>PRODUCT</span><span>PRICE</span><span>SOLD</span><span>REVENUE</span><span>ORDERS</span></div>
+                                <asp:Repeater ID="ProductPerformanceRepeater" runat="server">
+                                    <ItemTemplate><div class="dashboard-product-row"><span class="product-color"><%#: Eval("ProductName").ToString().Substring(0, 1) %></span><strong><%#: Eval("ProductName") %><small><%#: Eval("CategoryName") %></small></strong><span>&#8369;<%#: Eval("UnitPrice", "{0:N2}") %></span><span><%#: Eval("TotalUnitsSold") %></span><strong>&#8369;<%#: Eval("TotalRevenue", "{0:N2}") %></strong><span><%#: Eval("TimesOrdered") %></span></div></ItemTemplate>
+                                </asp:Repeater>
+                            </div>
+                            <a class="panel-link" href="Products.aspx">View all products</a>
+                        </section>
+                        <section class="panel sales-panel">
+                            <div class="panel-heading"><div><h2>Recent sales</h2><p>Today · <asp:Literal ID="TodayTransactionCount" runat="server" /> transactions</p></div><a class="filter-button" href="Sales.aspx" aria-label="View sales">&#9776;</a></div>
+                            <div class="dashboard-sales-list">
+                                <asp:Repeater ID="RecentSalesRepeater" runat="server">
+                                    <ItemTemplate><div class="dashboard-sale-row"><b>&#8369;</b><span><strong><%#: Eval("FormattedID") %></strong><small><%#: Eval("Items") %></small></span><time><%#: Eval("TransactionDate", "{0:h:mm tt}") %></time><strong>&#8369;<%#: Eval("NetAmount", "{0:N2}") %></strong></div></ItemTemplate>
+                                </asp:Repeater>
+                            </div>
+                            <asp:Panel ID="LowStockPanel" runat="server" CssClass="low-stock" Visible="false"><span>&#9888;</span><span><strong>Low stock alert</strong><small><asp:Literal ID="LowStockMessage" runat="server" /></small></span><a href="Products.aspx">Update</a></asp:Panel>
+                            <a class="panel-link" href="Sales.aspx">View all transactions</a>
+                        </section>
+                    </div>
                 </td>
             </tr>
         </table>

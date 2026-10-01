@@ -13,5 +13,16 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
 
     public partial class Analytics
     {
+        protected global::System.Web.UI.WebControls.Literal DateRangeText;
+        protected global::System.Web.UI.WebControls.Literal TotalRevenueValue;
+        protected global::System.Web.UI.WebControls.Literal WeeklyTransactionCount;
+        protected global::System.Web.UI.WebControls.Literal ItemsSoldValue;
+        protected global::System.Web.UI.WebControls.Literal BestSellerName;
+        protected global::System.Web.UI.WebControls.Literal BestSellerUnits;
+        protected global::System.Web.UI.WebControls.Repeater DailySalesRepeater;
+        protected global::System.Web.UI.WebControls.Repeater TopProductsRepeater;
+        protected global::System.Web.UI.WebControls.Literal BestSalesDayText;
+        protected global::System.Web.UI.WebControls.Literal TopPerformerText;
+        protected global::System.Web.UI.WebControls.Literal TodayActivityText;
     }
 }

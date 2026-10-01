@@ -13,5 +13,13 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
 
     public partial class Sales
     {
+
+        protected global::System.Web.UI.WebControls.Repeater SalesRepeater;
+
+        protected global::System.Web.UI.WebControls.Literal SalesTotalValue;
+        protected global::System.Web.UI.WebControls.Literal TodayTransactionCount;
+        protected global::System.Web.UI.WebControls.Literal AverageSaleValue;
+        protected global::System.Web.UI.WebControls.Literal TodayDateText;
+        protected global::System.Web.UI.WebControls.Literal SalesRowsText;
     }
 }

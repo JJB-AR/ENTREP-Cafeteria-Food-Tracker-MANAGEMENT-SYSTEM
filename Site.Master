@@ -13,7 +13,7 @@
     </asp:PlaceHolder>
 
     <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" runat="server" />
-    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" runat="server" />
+    <link href="~/Content/Site.css?v=dashboard-layout-3" rel="stylesheet" type="text/css" runat="server" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
 </head>
@@ -38,6 +38,21 @@
             </Scripts>
         </asp:ScriptManager>
 
+        <div id="AccountToolbar" runat="server" class="account-toolbar">
+            <span><asp:Literal ID="AuthenticatedUserName" runat="server" /></span>
+            <asp:LinkButton ID="LogoutButton" runat="server" CssClass="logout-button" CausesValidation="false" OnClick="LogoutButton_Click">Log out</asp:LinkButton>
+        </div>
+        <asp:Panel ID="TrackerSidebar" runat="server" CssClass="master-sidebar">
+            <div class="master-brand"><span class="brand-mark">&#127860;</span><span><strong>ENTREP</strong><small>FOOD TRACKER</small></span></div>
+            <nav class="tracker-nav" aria-label="Main navigation">
+                <a id="OverviewLink" runat="server" href="~/Dashboard.aspx">Overview</a>
+                <a id="ProductsLink" runat="server" href="~/Products.aspx">Products</a>
+                <a id="SalesLink" runat="server" href="~/Sales.aspx">Sales</a>
+                <a id="AnalyticsLink" runat="server" href="~/Analytics.aspx">Analytics</a>
+            </nav>
+            <div class="profile master-profile"><b><asp:Literal ID="UserInitials" runat="server" /></b><span><strong><asp:Literal ID="SidebarUserName" runat="server" /></strong><small>ENTREP Student</small></span></div>
+        </asp:Panel>
+
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark legacy-nav">
             <div class="container">
                 <a class="navbar-brand" runat="server" href="~/">Application name</a>
@@ -55,7 +70,7 @@
                 </div>
             </div>
         </nav>
-        <div class="container body-content">
+        <div class="body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
             <hr />

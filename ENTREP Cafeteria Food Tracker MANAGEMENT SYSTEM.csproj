@@ -182,6 +182,11 @@
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
+    <Content Include="sql\CafeteriaFoodTracker.mdf" />
+    <Content Include="sql\CafeteriaFoodTracker.sql" />
+    <Content Include="sql\CafeteriaFoodTracker_log.ldf">
+      <DependentUpon>CafeteriaFoodTracker.mdf</DependentUpon>
+    </Content>
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -275,6 +280,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Database\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -14,6 +14,17 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
     public partial class SiteMaster
     {
 
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl AccountToolbar;
+        protected global::System.Web.UI.WebControls.Literal AuthenticatedUserName;
+        protected global::System.Web.UI.WebControls.LinkButton LogoutButton;
+        protected global::System.Web.UI.WebControls.Panel TrackerSidebar;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor OverviewLink;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor ProductsLink;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor SalesLink;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor AnalyticsLink;
+        protected global::System.Web.UI.WebControls.Literal UserInitials;
+        protected global::System.Web.UI.WebControls.Literal SidebarUserName;
+
         /// <summary>
         /// MainContent control.
         /// </summary>

@@ -43,6 +43,22 @@ BEGIN
 END
 GO
 
+-- 2.2 User Accounts Table
+-- Passwords are stored as versioned PBKDF2 hashes created by the application.
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'AppUsers')
+BEGIN
+    CREATE TABLE AppUsers (
+        UserID          INT IDENTITY(1,1) PRIMARY KEY,
+        Username        NVARCHAR(50) NOT NULL,
+        DisplayName     NVARCHAR(100) NOT NULL,
+        PasswordHash    NVARCHAR(256) NOT NULL,
+        IsActive        BIT NOT NULL CONSTRAINT DF_AppUsers_IsActive DEFAULT 1,
+        CreatedAt       DATETIME2 NOT NULL CONSTRAINT DF_AppUsers_CreatedAt DEFAULT SYSUTCDATETIME(),
+        CONSTRAINT UQ_AppUsers_Username UNIQUE (Username)
+    );
+END
+GO
+
 -- 2.2 Products Table
 -- Manages food products, selling prices, production cost, and inventory quantities
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Products')
@@ -555,6 +571,15 @@ GO
 -- ============================================================================
 -- 6. SEED DATA GENERATION
 -- ============================================================================
+
+-- Demo sign-in: username = demo, password = Cafeteria123! (change before deployment)
+IF NOT EXISTS (SELECT 1 FROM AppUsers WHERE Username = N'demo')
+BEGIN
+    INSERT INTO AppUsers (Username, DisplayName, PasswordHash)
+    VALUES (N'demo', N'Demo Cafeteria Admin',
+            N'100000.AAECAwQFBgcICQoLDA0ODw==.EYeC2Hq+uBbnQjlLqPJR0AU+NSvmuZ0Jil0NaiEIkw4=');
+END
+GO
 
 -- 6.1 Seed Food Categories
 IF NOT EXISTS (SELECT 1 FROM Categories)
