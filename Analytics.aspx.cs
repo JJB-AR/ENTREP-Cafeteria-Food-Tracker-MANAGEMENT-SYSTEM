@@ -13,40 +13,90 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
         {
             if (!IsPostBack)
             {
+                DateTime today;
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["CafeteriaFoodTrackerDB"].ConnectionString))
+                using (SqlCommand command = new SqlCommand("SELECT CAST(SYSDATETIME() AS date);", connection))
+                {
+                    connection.Open();
+                    today = Convert.ToDateTime(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                }
+
+                StartDateInput.Text = today.AddDays(-6).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                EndDateInput.Text = today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
                 BindAnalytics();
             }
         }
 
+        protected void ApplyDateRangeButton_Click(object sender, EventArgs e)
+        {
+            BindAnalytics();
+        }
+
         private void BindAnalytics()
         {
-            DateTime today = DateTime.Today;
-            DateTime startDate = today.AddDays(-6);
-            DateTime endDate = today.AddDays(1);
-            DateRangeText.Text = startDate.ToString("MMM d", CultureInfo.CurrentCulture) + "–" + today.ToString("MMM d, yyyy", CultureInfo.CurrentCulture);
+            DateTime startDate;
+            DateTime selectedEndDate;
+            if (!DateTime.TryParseExact(StartDateInput.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate) ||
+                !DateTime.TryParseExact(EndDateInput.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out selectedEndDate))
+            {
+                DateRangeError.Text = "Choose a valid start date and end date.";
+                DateRangeError.Visible = true;
+                return;
+            }
+
+            if (startDate.Date > selectedEndDate.Date)
+            {
+                DateRangeError.Text = "The start date must be on or before the end date.";
+                DateRangeError.Visible = true;
+                return;
+            }
+
+            if (selectedEndDate.Date == DateTime.MaxValue.Date)
+            {
+                DateRangeError.Text = "Choose an end date before December 31, 9999.";
+                DateRangeError.Visible = true;
+                return;
+            }
+
+            startDate = startDate.Date;
+            selectedEndDate = selectedEndDate.Date;
+            DateTime endDate = selectedEndDate.AddDays(1);
+            DateRangeError.Visible = false;
 
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["CafeteriaFoodTrackerDB"].ConnectionString))
             {
                 connection.Open();
-                BindTrend(connection, startDate, endDate, today);
-                BindSummary(connection, startDate, endDate);
-                BindTopProducts(connection, startDate, endDate);
-                BindTodayActivity(connection, today, endDate);
+
+                DateTime today;
+                using (SqlCommand command = new SqlCommand("SELECT CAST(SYSDATETIME() AS date);", connection))
+                {
+                    today = Convert.ToDateTime(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                }
+
+                int userId = Login.GetCurrentUserId(connection, Context.User.Identity.Name);
+                DateRangeText.Text = startDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture) + "–" + selectedEndDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture);
+
+                BindTrend(connection, userId, startDate, endDate, today);
+                BindSummary(connection, userId, startDate, endDate);
+                BindTopProducts(connection, userId, startDate, endDate);
+                BindTodayActivity(connection, userId, today, today.AddDays(1));
             }
         }
 
-        private void BindTrend(SqlConnection connection, DateTime startDate, DateTime endDate, DateTime today)
+        private void BindTrend(SqlConnection connection, int userId, DateTime startDate, DateTime endDate, DateTime today)
         {
             DataTable dailyTotals = new DataTable();
             using (SqlCommand command = new SqlCommand(@"SELECT CAST(TransactionDate AS date) AS SaleDate,
                                                                SUM(NetAmount) AS Revenue,
                                                                COUNT(*) AS Transactions
                                                         FROM SalesTransactions
-                                                        WHERE TransactionDate >= @StartDate AND TransactionDate < @EndDate
+                                                        WHERE UserID = @UserID AND TransactionDate >= @StartDate AND TransactionDate < @EndDate
                                                         GROUP BY CAST(TransactionDate AS date);", connection))
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
                 command.Parameters.Add("@StartDate", SqlDbType.DateTime2).Value = startDate;
                 command.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 adapter.Fill(dailyTotals);
             }
 
@@ -71,7 +121,8 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             chart.Columns.Add("BarHeight", typeof(int));
             chart.Columns.Add("Revenue", typeof(decimal));
             chart.Columns.Add("IsToday", typeof(bool));
-            for (int offset = 0; offset < 7; offset++)
+            int dayCount = (int)(endDate - startDate).TotalDays;
+            for (int offset = 0; offset < dayCount; offset++)
             {
                 DateTime day = startDate.AddDays(offset);
                 decimal revenue = 0m;
@@ -85,7 +136,7 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                 }
 
                 int barHeight = maximum == 0m ? 8 : Math.Max(8, (int)Math.Round((double)(revenue / maximum * 114m)));
-                chart.Rows.Add(day.ToString("ddd", CultureInfo.CurrentCulture), barHeight, revenue, day.Date == today.Date);
+                chart.Rows.Add(day.ToString("MMM d", CultureInfo.CurrentCulture), barHeight, revenue, day.Date == today.Date);
             }
 
             DailySalesRepeater.DataSource = chart;
@@ -97,15 +148,16 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                 : Server.HtmlEncode(bestDay.ToString("dddd", CultureInfo.CurrentCulture)) + " generated the most revenue at &#8369;" + maximum.ToString("N2", CultureInfo.CurrentCulture) + ".";
         }
 
-        private void BindSummary(SqlConnection connection, DateTime startDate, DateTime endDate)
+        private void BindSummary(SqlConnection connection, int userId, DateTime startDate, DateTime endDate)
         {
             using (SqlCommand command = new SqlCommand(@"SELECT ISNULL(SUM(i.QuantitySold), 0)
                                                         FROM SalesTransactionItems i
                                                         INNER JOIN SalesTransactions t ON t.TransactionID = i.TransactionID
-                                                        WHERE t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate;", connection))
+                                                        WHERE t.UserID = @UserID AND t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate;", connection))
             {
                 command.Parameters.Add("@StartDate", SqlDbType.DateTime2).Value = startDate;
                 command.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 ItemsSoldValue.Text = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture).ToString("N0", CultureInfo.CurrentCulture);
             }
 
@@ -113,12 +165,13 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                                                         FROM SalesTransactionItems i
                                                         INNER JOIN SalesTransactions t ON t.TransactionID = i.TransactionID
                                                         INNER JOIN Products p ON p.ProductID = i.ProductID
-                                                        WHERE t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate
-                                                        GROUP BY p.ProductName
+                                                        WHERE t.UserID = @UserID AND p.UserID = t.UserID AND t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate
+                                                        GROUP BY p.ProductID, p.ProductName
                                                         ORDER BY UnitsSold DESC, p.ProductName;", connection))
             {
                 command.Parameters.Add("@StartDate", SqlDbType.DateTime2).Value = startDate;
                 command.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow))
                 {
                     if (reader.Read())
@@ -137,7 +190,7 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             }
         }
 
-        private void BindTopProducts(SqlConnection connection, DateTime startDate, DateTime endDate)
+        private void BindTopProducts(SqlConnection connection, int userId, DateTime startDate, DateTime endDate)
         {
             using (SqlCommand command = new SqlCommand(@"SELECT TOP 4 p.ProductName,
                                                                SUM(i.QuantitySold) AS UnitsSold,
@@ -145,13 +198,14 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                                                         FROM SalesTransactionItems i
                                                         INNER JOIN SalesTransactions t ON t.TransactionID = i.TransactionID
                                                         INNER JOIN Products p ON p.ProductID = i.ProductID
-                                                        WHERE t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate
-                                                        GROUP BY p.ProductName
+                                                        WHERE t.UserID = @UserID AND p.UserID = t.UserID AND t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate
+                                                        GROUP BY p.ProductID, p.ProductName
                                                         ORDER BY Revenue DESC, p.ProductName;", connection))
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
                 command.Parameters.Add("@StartDate", SqlDbType.DateTime2).Value = startDate;
                 command.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 DataTable products = new DataTable();
                 adapter.Fill(products);
                 TopProductsRepeater.DataSource = products;
@@ -159,12 +213,13 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             }
         }
 
-        private void BindTodayActivity(SqlConnection connection, DateTime today, DateTime endDate)
+        private void BindTodayActivity(SqlConnection connection, int userId, DateTime today, DateTime endDate)
         {
-            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM SalesTransactions WHERE TransactionDate >= @Today AND TransactionDate < @EndDate", connection))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM SalesTransactions WHERE UserID = @UserID AND TransactionDate >= @Today AND TransactionDate < @EndDate", connection))
             {
                 command.Parameters.Add("@Today", SqlDbType.DateTime2).Value = today;
                 command.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 int count = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
                 TodayActivityText.Text = count.ToString("N0", CultureInfo.CurrentCulture) + (count == 1 ? " transaction recorded today." : " transactions recorded today.");
             }

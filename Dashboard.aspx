@@ -13,7 +13,7 @@
                         </div>
                         <div class="header-actions">
                             <span class="static-select"><asp:Literal ID="DashboardDateRange" runat="server" /></span>
-                            <a class="record-button" href="Sales.aspx">&#65291; &nbsp; Record sale</a>
+                            <a class="record-button" href="Sales.aspx?action=new">&#65291; &nbsp; Record sale</a>
                         </div>
                     </header>
                     <div class="dashboard-grid">

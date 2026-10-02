@@ -6,23 +6,24 @@
             <tr>
                 <td class="tracker-sidebar"></td>
                 <td class="tracker-content">
-                    <header class="screen-header"><div><h1>Analytics</h1><p>Understand sales patterns and see which products perform best.</p></div><span class="static-select"><asp:Literal ID="DateRangeText" runat="server" /></span></header>
+                    <header class="screen-header"><div><h1>Analytics</h1><p>Understand sales patterns and see which products perform best.</p></div><div class="analytics-date-filter"><label for="<%= StartDateInput.ClientID %>">From <asp:TextBox ID="StartDateInput" runat="server" TextMode="Date" CssClass="analytics-date-input" /></label><label for="<%= EndDateInput.ClientID %>">To <asp:TextBox ID="EndDateInput" runat="server" TextMode="Date" CssClass="analytics-date-input" /></label><asp:Button ID="ApplyDateRangeButton" runat="server" Text="Apply" CssClass="date-button" OnClick="ApplyDateRangeButton_Click" CausesValidation="false" /><span class="selected-date-range"><asp:Literal ID="DateRangeText" runat="server" /></span></div></header>
+                    <asp:Label ID="DateRangeError" runat="server" CssClass="date-range-error" Visible="false" />
                     <div class="analytics-summary">
-                        <div class="summary-card"><small>Revenue, last 7 days</small><strong>&#8369;<asp:Literal ID="TotalRevenueValue" runat="server" /></strong><span><asp:Literal ID="WeeklyTransactionCount" runat="server" /> transactions</span></div>
-                        <div class="summary-card"><small>Items sold, last 7 days</small><strong><asp:Literal ID="ItemsSoldValue" runat="server" /></strong><span>Across all products</span></div>
-                        <div class="summary-card"><small>Best seller</small><strong class="summary-product"><asp:Literal ID="BestSellerName" runat="server" /></strong><span><asp:Literal ID="BestSellerUnits" runat="server" /> units sold this week</span></div>
+                        <div class="summary-card"><small>Revenue, selected period</small><strong>&#8369;<asp:Literal ID="TotalRevenueValue" runat="server" /></strong><span><asp:Literal ID="WeeklyTransactionCount" runat="server" /> transactions</span></div>
+                        <div class="summary-card"><small>Items sold, selected period</small><strong><asp:Literal ID="ItemsSoldValue" runat="server" /></strong><span>Across all products</span></div>
+                        <div class="summary-card"><small>Best seller</small><strong class="summary-product"><asp:Literal ID="BestSellerName" runat="server" /></strong><span><asp:Literal ID="BestSellerUnits" runat="server" /> units sold in this period</span></div>
                     </div>
                     <div class="analytics-layout">
                         <section class="panel analytics-trend">
-                            <div class="panel-heading"><div><h2>Sales trend</h2><p>Daily revenue for the selected week</p></div><span class="legend">&#9679; Revenue</span></div>
-                            <div class="daily-chart" role="img" aria-label="Daily revenue for the last seven days">
+                            <div class="panel-heading"><div><h2>Sales trend</h2><p>Daily revenue for the selected date range</p></div><span class="legend">&#9679; Revenue</span></div>
+                            <div class="daily-chart-scroll"><div class="daily-chart" role="img" aria-label="Daily revenue for the selected date range">
                                 <asp:Repeater ID="DailySalesRepeater" runat="server">
                                     <ItemTemplate><div class="chart-column"><i class='<%# Convert.ToBoolean(Eval("IsToday")) ? "highlight" : String.Empty %>' style='height:<%# Eval("BarHeight") %>px' title='&#8369;<%# Eval("Revenue", "{0:N2}") %>'></i><span><%#: Eval("DayLabel") %></span></div></ItemTemplate>
                                 </asp:Repeater>
-                            </div>
+                            </div></div>
                         </section>
                         <section class="panel performance-panel">
-                            <div class="panel-heading"><div><h2>Top products</h2><p>By revenue this week</p></div></div>
+                            <div class="panel-heading"><div><h2>Top products</h2><p>By revenue in the selected period</p></div></div>
                             <div class="ranking-list">
                                 <asp:Repeater ID="TopProductsRepeater" runat="server">
                                     <ItemTemplate><div class="ranking-row"><b class="rank-number"><%# Container.ItemIndex + 1 %></b><strong><%#: Eval("ProductName") %><small><%#: Eval("UnitsSold") %> sold</small></strong><span><strong>&#8369;<%#: Eval("Revenue", "{0:N2}") %></strong></span></div></ItemTemplate>

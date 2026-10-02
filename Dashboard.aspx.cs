@@ -26,9 +26,10 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["CafeteriaFoodTrackerDB"].ConnectionString))
             {
                 connection.Open();
-                using (SqlCommand userCommand = new SqlCommand("SELECT DisplayName FROM AppUsers WHERE Username = @Username AND IsActive = 1", connection))
+                int userId = Login.GetCurrentUserId(connection, Context.User.Identity.Name);
+                using (SqlCommand userCommand = new SqlCommand("SELECT DisplayName FROM AppUsers WHERE UserID = @UserID AND IsActive = 1", connection))
                 {
-                    userCommand.Parameters.AddWithValue("@Username", Context.User.Identity.Name);
+                    userCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                     object name = userCommand.ExecuteScalar();
                     if (name != null && name != DBNull.Value)
                     {
@@ -37,14 +38,15 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                 }
 
                 const string metricsSql = @"SELECT ISNULL(SUM(NetAmount), 0), COUNT(TransactionID)
-                                            FROM SalesTransactions WHERE TransactionDate >= @Today;
+                                            FROM SalesTransactions WHERE UserID = @UserID AND TransactionDate >= @Today;
                                             SELECT ISNULL(SUM(i.QuantitySold), 0)
                                             FROM SalesTransactionItems i
                                             INNER JOIN SalesTransactions t ON t.TransactionID = i.TransactionID
-                                            WHERE t.TransactionDate >= @Today;";
+                                            WHERE t.UserID = @UserID AND t.TransactionDate >= @Today;";
                 using (SqlCommand metricsCommand = new SqlCommand(metricsSql, connection))
                 {
                     metricsCommand.Parameters.Add("@Today", SqlDbType.DateTime2).Value = today;
+                    metricsCommand.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                     using (SqlDataReader reader = metricsCommand.ExecuteReader())
                     {
                         if (reader.Read())
@@ -59,26 +61,27 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                     }
                 }
 
-                BindDailySales(connection, weekStart, today.AddDays(1), today);
-                BindProductPerformance(connection);
-                BindRecentSales(connection, today);
-                BindLowStock(connection);
+                BindDailySales(connection, userId, weekStart, today.AddDays(1), today);
+                BindProductPerformance(connection, userId);
+                BindRecentSales(connection, userId, today);
+                BindLowStock(connection, userId);
             }
         }
 
-        private void BindDailySales(SqlConnection connection, DateTime weekStart, DateTime endDate, DateTime today)
+        private void BindDailySales(SqlConnection connection, int userId, DateTime weekStart, DateTime endDate, DateTime today)
         {
             DataTable revenueByDay = new DataTable();
             revenueByDay.Columns.Add("SaleDate", typeof(DateTime));
             revenueByDay.Columns.Add("Revenue", typeof(decimal));
             using (SqlCommand command = new SqlCommand(@"SELECT CAST(TransactionDate AS date) AS SaleDate, SUM(NetAmount) AS Revenue
                                                          FROM SalesTransactions
-                                                         WHERE TransactionDate >= @WeekStart AND TransactionDate < @EndDate
+                                                         WHERE UserID = @UserID AND TransactionDate >= @WeekStart AND TransactionDate < @EndDate
                                                          GROUP BY CAST(TransactionDate AS date);", connection))
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
                 command.Parameters.Add("@WeekStart", SqlDbType.DateTime2).Value = weekStart;
                 command.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 adapter.Fill(revenueByDay);
             }
 
@@ -114,13 +117,15 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             DailySalesRepeater.DataBind();
         }
 
-        private void BindProductPerformance(SqlConnection connection)
+        private void BindProductPerformance(SqlConnection connection, int userId)
         {
             using (SqlCommand command = new SqlCommand(@"SELECT TOP 4 ProductName, CategoryName, UnitPrice, TotalUnitsSold, TotalRevenue, TimesOrdered
                                                          FROM vw_ProductSalesSummary
+                                                         WHERE UserID = @UserID
                                                          ORDER BY TotalRevenue DESC, ProductName;", connection))
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 DataTable products = new DataTable();
                 adapter.Fill(products);
                 ProductPerformanceRepeater.DataSource = products;
@@ -128,43 +133,49 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             }
         }
 
-        private void BindRecentSales(SqlConnection connection, DateTime today)
+        private void BindRecentSales(SqlConnection connection, int userId, DateTime today)
         {
             const string sql = @"SELECT TOP 4 '#' + RIGHT('0000' + CONVERT(VARCHAR(10), t.TransactionID), 4) AS FormattedID,
                                         t.TransactionDate, t.NetAmount,
                                         STUFF((SELECT ', ' + CONVERT(VARCHAR(10), i.QuantitySold) + N'× ' + p.ProductName
                                                FROM SalesTransactionItems i
                                                INNER JOIN Products p ON p.ProductID = i.ProductID
-                                               WHERE i.TransactionID = t.TransactionID
+                                               WHERE i.TransactionID = t.TransactionID AND p.UserID = t.UserID
                                                FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 2, '') AS Items
                                  FROM SalesTransactions t
+                                 WHERE t.UserID = @UserID
                                  ORDER BY t.TransactionDate DESC;";
             using (SqlCommand command = new SqlCommand(sql, connection))
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 DataTable sales = new DataTable();
                 adapter.Fill(sales);
                 RecentSalesRepeater.DataSource = sales;
                 RecentSalesRepeater.DataBind();
             }
 
-            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM SalesTransactions WHERE TransactionDate >= @Today", connection))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM SalesTransactions WHERE UserID = @UserID AND TransactionDate >= @Today", connection))
             {
                 command.Parameters.Add("@Today", SqlDbType.DateTime2).Value = today;
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
                 TodayTransactionCount.Text = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture).ToString("N0", CultureInfo.CurrentCulture);
             }
         }
 
-        private void BindLowStock(SqlConnection connection)
+        private void BindLowStock(SqlConnection connection, int userId)
         {
-            using (SqlCommand command = new SqlCommand("SELECT TOP 1 ProductName, StockQty FROM vw_LowStockAlert ORDER BY StockQty, ProductName", connection))
-            using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow))
+            using (SqlCommand command = new SqlCommand("SELECT TOP 1 ProductName, StockQty FROM vw_LowStockAlert WHERE UserID = @UserID ORDER BY StockQty, ProductName", connection))
             {
-                if (reader.Read())
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    LowStockMessage.Text = Server.HtmlEncode(Convert.ToString(reader["ProductName"], CultureInfo.CurrentCulture)) +
-                        " has " + Convert.ToString(reader["StockQty"], CultureInfo.CurrentCulture) + " servings left.";
-                    LowStockPanel.Visible = true;
+                    if (reader.Read())
+                    {
+                        LowStockMessage.Text = Server.HtmlEncode(Convert.ToString(reader["ProductName"], CultureInfo.CurrentCulture)) +
+                            " has " + Convert.ToString(reader["StockQty"], CultureInfo.CurrentCulture) + " servings left.";
+                        LowStockPanel.Visible = true;
+                    }
                 }
             }
         }

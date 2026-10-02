@@ -14,6 +14,10 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
     public partial class Analytics
     {
         protected global::System.Web.UI.WebControls.Literal DateRangeText;
+        protected global::System.Web.UI.WebControls.TextBox StartDateInput;
+        protected global::System.Web.UI.WebControls.TextBox EndDateInput;
+        protected global::System.Web.UI.WebControls.Button ApplyDateRangeButton;
+        protected global::System.Web.UI.WebControls.Label DateRangeError;
         protected global::System.Web.UI.WebControls.Literal TotalRevenueValue;
         protected global::System.Web.UI.WebControls.Literal WeeklyTransactionCount;
         protected global::System.Web.UI.WebControls.Literal ItemsSoldValue;

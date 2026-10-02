@@ -116,6 +116,7 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                     return false;
                 }
             }
+
         }
 
         private static bool Authenticate(string username, string password, out string displayName)
@@ -139,6 +140,26 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                     displayName = reader.GetString(0);
                     return true;
                 }
+            }
+        }
+
+        internal static int GetCurrentUserId(SqlConnection connection, string username)
+        {
+            if (connection == null || connection.State != ConnectionState.Open)
+            {
+                throw new InvalidOperationException("An open database connection is required.");
+            }
+
+            using (SqlCommand command = new SqlCommand("SELECT UserID FROM AppUsers WHERE Username = @Username AND IsActive = 1;", connection))
+            {
+                command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username ?? string.Empty;
+                object result = command.ExecuteScalar();
+                if (result == null || result == DBNull.Value)
+                {
+                    throw new InvalidOperationException("The signed-in account is not active.");
+                }
+
+                return Convert.ToInt32(result, CultureInfo.InvariantCulture);
             }
         }
 
