@@ -36,6 +36,7 @@
                             <p class="login-hint">Demo accounts (for testing only):<br />User: <strong>demo</strong> / <strong>Cafeteria123!</strong><br />Admin: <strong>admin</strong> / <strong>admin123</strong></p>
                             <asp:Button ID="ShowSignUpButton" runat="server" Text="Create an account" CssClass="login-signup-link" CausesValidation="false" OnClick="ShowSignUpButton_Click" />
                         </asp:Panel>
+                        <!-- Sign Up Panel -->
                         <asp:Panel ID="SignUpPanel" runat="server" CssClass="signup-panel" Visible="false">
                             <h2 class="login-form-heading">Create your account</h2>
                             <div class="login-field">

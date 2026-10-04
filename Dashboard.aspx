@@ -115,7 +115,7 @@
                             <a class="panel-link" href="Products.aspx">View all products</a>
                         </section>
                         <section class="panel sales-panel">
-                            <div class="panel-heading"><div><h2>Recent sales</h2><p>Today · <asp:Literal ID="TodayTransactionCount" runat="server" /> transactions</p></div><a class="filter-button" href="Sales.aspx" aria-label="View sales">&#9776;</a></div>
+                            <div class="panel-heading"><div><h2>Recent sales</h2><p>Today &middot; <asp:Literal ID="TodayTransactionCount" runat="server" /> transactions</p></div></div>
                             <div class="dashboard-sales-list">
                                 <asp:Repeater ID="RecentSalesRepeater" runat="server">
                                     <ItemTemplate><div class="dashboard-sale-row"><b>&#8369;</b><span><strong><%#: Eval("FormattedID") %></strong><small><%#: Eval("Items") %></small></span><time><%#: Eval("TransactionDate", "{0:h:mm tt}") %></time><strong>&#8369;<%#: Eval("NetAmount", "{0:N2}") %></strong></div></ItemTemplate>

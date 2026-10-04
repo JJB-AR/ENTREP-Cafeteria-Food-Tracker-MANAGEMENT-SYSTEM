@@ -232,6 +232,8 @@ button, input[type=submit] { font-family: inherit; cursor: pointer; }
 .user-management-panel .panel-heading { margin-bottom: 18px; }
 .user-management-panel .panel-heading h2 { font-size: 17px; }
 .user-management-panel .panel-heading p { font-size: 12px; }
+.product-panel .panel-heading .add-button { text-decoration: none; }
+.product-panel .panel-heading .add-button:hover { text-decoration: none; }
 .user-management-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 14px; margin-top: 18px; }
 .user-form-field { min-width: 0; }
 .user-form-field label, .user-management-form > label { display: block; margin-bottom: 7px; color: #596860; font-size: 11px; font-weight: 600; }
