@@ -1,4 +1,7 @@
 -- ============================================================================
+-- Description: Complete all-in-one setup for the CafeteriaFoodTracker database.
+-- Author: Jonas Balate
+-- Date: 10/4/2026
 -- ENTREP CAFETERIA FOOD TRACKER MANAGEMENT SYSTEM
 -- Complete SQL Database Creation & Setup Script
 -- Target: Microsoft SQL Server / SQL Server LocalDB
@@ -52,10 +55,17 @@ BEGIN
         Username        NVARCHAR(50) NOT NULL,
         DisplayName     NVARCHAR(100) NOT NULL,
         PasswordHash    NVARCHAR(256) NOT NULL,
+        IsAdmin         BIT NOT NULL CONSTRAINT DF_AppUsers_IsAdmin DEFAULT 0,
         IsActive        BIT NOT NULL CONSTRAINT DF_AppUsers_IsActive DEFAULT 1,
         CreatedAt       DATETIME2 NOT NULL CONSTRAINT DF_AppUsers_CreatedAt DEFAULT SYSUTCDATETIME(),
         CONSTRAINT UQ_AppUsers_Username UNIQUE (Username)
     );
+END
+GO
+
+IF COL_LENGTH('dbo.AppUsers', 'IsAdmin') IS NULL
+BEGIN
+    ALTER TABLE dbo.AppUsers ADD IsAdmin BIT NOT NULL CONSTRAINT DF_AppUsers_IsAdmin DEFAULT 0 WITH VALUES;
 END
 GO
 
@@ -65,6 +75,26 @@ BEGIN
     VALUES (N'demo', N'Demo Cafeteria Admin',
             N'100000.AAECAwQFBgcICQoLDA0ODw==.EYeC2Hq+uBbnQjlLqPJR0AU+NSvmuZ0Jil0NaiEIkw4=');
 END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM AppUsers WHERE Username COLLATE Latin1_General_100_BIN2 = N'admin')
+BEGIN
+    INSERT INTO AppUsers (Username, DisplayName, PasswordHash, IsAdmin)
+    VALUES (N'admin', N'Demo Administrator',
+            N'100000.Zy2bUCX4nCmynUPCYE4reA==.abtXCMUkD9DxjNLH0NhrebwHXmwkELlhcofdSVzDLjc=', 1);
+END
+ELSE
+BEGIN
+    UPDATE AppUsers
+    SET DisplayName = N'Demo Administrator',
+        PasswordHash = N'100000.Zy2bUCX4nCmynUPCYE4reA==.abtXCMUkD9DxjNLH0NhrebwHXmwkELlhcofdSVzDLjc=',
+        IsAdmin = 1,
+        IsActive = 1
+    WHERE LOWER(Username) = N'admin';
+END
+GO
+
+UPDATE AppUsers SET IsAdmin = 0 WHERE LOWER(Username) <> N'admin';
 GO
 
 -- 2.2 Products Table

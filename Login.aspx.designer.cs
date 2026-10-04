@@ -211,5 +211,14 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button SignUpButton;
+
+        /// <summary>
+        /// ReturnToLoginButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ReturnToLoginButton;
     }
 }

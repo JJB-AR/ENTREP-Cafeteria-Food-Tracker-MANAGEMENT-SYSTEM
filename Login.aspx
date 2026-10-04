@@ -33,7 +33,7 @@
                                 <asp:RequiredFieldValidator ID="PasswordRequired" runat="server" ControlToValidate="PasswordTextBox" ErrorMessage="Password is required." CssClass="field-error" Display="Dynamic" ValidationGroup="Login" />
                             </div>
                             <asp:Button ID="LoginButton" runat="server" Text="Sign in to dashboard" CssClass="login-submit" OnClick="LoginButton_Click" ValidationGroup="Login" />
-                            <p class="login-hint">Demo account: <strong>demo</strong> / <strong>Cafeteria123!</strong></p>
+                            <p class="login-hint">Demo accounts (for testing only):<br />User: <strong>demo</strong> / <strong>Cafeteria123!</strong><br />Admin: <strong>admin</strong> / <strong>admin123</strong></p>
                             <asp:Button ID="ShowSignUpButton" runat="server" Text="Create an account" CssClass="login-signup-link" CausesValidation="false" OnClick="ShowSignUpButton_Click" />
                         </asp:Panel>
                         <asp:Panel ID="SignUpPanel" runat="server" CssClass="signup-panel" Visible="false">

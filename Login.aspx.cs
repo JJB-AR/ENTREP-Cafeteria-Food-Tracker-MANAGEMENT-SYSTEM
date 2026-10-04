@@ -97,8 +97,9 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
 
         private static bool Register(string username, string displayName, string password)
         {
-            const string sql = @"INSERT INTO AppUsers (Username, DisplayName, PasswordHash)
-                                 VALUES (@Username, @DisplayName, @PasswordHash);";
+            username = username.Trim().ToLowerInvariant();
+            const string sql = @"INSERT INTO AppUsers (Username, DisplayName, PasswordHash, IsAdmin)
+                                 VALUES (@Username, @DisplayName, @PasswordHash, 0);";
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             using (SqlCommand command = new SqlCommand(sql, connection))
             {
@@ -123,12 +124,12 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
         {
             const string sql = @"SELECT DisplayName, PasswordHash
                                  FROM AppUsers
-                                 WHERE Username = @Username AND IsActive = 1;";
+                                 WHERE LOWER(Username) = @Username AND IsActive = 1;";
             displayName = null;
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             using (SqlCommand command = new SqlCommand(sql, connection))
             {
-                command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username.Trim();
+                command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username.Trim().ToLowerInvariant();
                 connection.Open();
                 using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow))
                 {
@@ -150,9 +151,9 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                 throw new InvalidOperationException("An open database connection is required.");
             }
 
-            using (SqlCommand command = new SqlCommand("SELECT UserID FROM AppUsers WHERE Username = @Username AND IsActive = 1;", connection))
+            using (SqlCommand command = new SqlCommand("SELECT UserID FROM AppUsers WHERE LOWER(Username) = @Username AND IsActive = 1;", connection))
             {
-                command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username ?? string.Empty;
+                command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = (username ?? string.Empty).Trim().ToLowerInvariant();
                 object result = command.ExecuteScalar();
                 if (result == null || result == DBNull.Value)
                 {
@@ -160,6 +161,21 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
                 }
 
                 return Convert.ToInt32(result, CultureInfo.InvariantCulture);
+            }
+        }
+
+        internal static bool IsAdministrator(SqlConnection connection, int userId)
+        {
+            if (connection == null || connection.State != ConnectionState.Open)
+            {
+                throw new InvalidOperationException("An open database connection is required.");
+            }
+
+            using (SqlCommand command = new SqlCommand("SELECT IsAdmin FROM AppUsers WHERE UserID = @UserID AND IsActive = 1;", connection))
+            {
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = userId;
+                object result = command.ExecuteScalar();
+                return result != null && result != DBNull.Value && Convert.ToBoolean(result, CultureInfo.InvariantCulture);
             }
         }
 
@@ -177,7 +193,7 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             }
         }
 
-        private static string HashPassword(string password)
+        internal static string HashPassword(string password)
         {
             byte[] salt = new byte[16];
             using (RandomNumberGenerator generator = RandomNumberGenerator.Create())

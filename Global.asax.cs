@@ -31,9 +31,9 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             try
             {
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["CafeteriaFoodTrackerDB"].ConnectionString))
-                using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM AppUsers WHERE Username = @Username AND IsActive = 1;", connection))
+                using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM AppUsers WHERE LOWER(Username) = @Username AND IsActive = 1;", connection))
                 {
-                    command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = Context.User.Identity.Name;
+                    command.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = Context.User.Identity.Name.Trim().ToLowerInvariant();
                     connection.Open();
                     int activeAccountCount = Convert.ToInt32(command.ExecuteScalar());
                     if (activeAccountCount == 0)

@@ -192,6 +192,7 @@
     <Content Include="sql\03_Views.sql" />
     <Content Include="sql\04_Stored-Procedures.sql" />
     <Content Include="sql\05_Seed-Data.sql" />
+    <Content Include="sql\06_Admin-Role-Migration.sql" />
     <Content Include="sql\CafeteriaFoodTracker.mdf" />
     <Content Include="sql\CafeteriaFoodTracker.sql" />
     <Content Include="sql\CafeteriaFoodTracker_log.ldf">

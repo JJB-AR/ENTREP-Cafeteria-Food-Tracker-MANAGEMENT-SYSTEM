@@ -14,6 +14,48 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
     public partial class Dashboard
     {
 
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl DashboardLayout;
+
+        protected global::System.Web.UI.WebControls.Panel AdminManagementPanel;
+
+        protected global::System.Web.UI.WebControls.Literal AdminTotalUsersValue;
+
+        protected global::System.Web.UI.WebControls.Literal AdminActiveUsersValue;
+
+        protected global::System.Web.UI.WebControls.GridView AdminTransactionsGrid;
+
+        protected global::System.Web.UI.WebControls.Label NewAccountUsernameLabel;
+
+        protected global::System.Web.UI.WebControls.TextBox NewAccountUsername;
+
+        protected global::System.Web.UI.WebControls.Label NewAccountDisplayNameLabel;
+
+        protected global::System.Web.UI.WebControls.TextBox NewAccountDisplayName;
+
+        protected global::System.Web.UI.WebControls.Label NewAccountPasswordLabel;
+
+        protected global::System.Web.UI.WebControls.TextBox NewAccountPassword;
+
+        protected global::System.Web.UI.WebControls.Button CreateAccountButton;
+
+        protected global::System.Web.UI.WebControls.Label UserManagementMessage;
+
+        protected global::System.Web.UI.WebControls.GridView UsersGrid;
+
+        protected global::System.Web.UI.WebControls.Panel ResetPasswordPanel;
+
+        protected global::System.Web.UI.WebControls.HiddenField SelectedResetUserID;
+
+        protected global::System.Web.UI.WebControls.Label ResetPasswordFor;
+
+        protected global::System.Web.UI.WebControls.TextBox ResetPasswordInput;
+
+        protected global::System.Web.UI.WebControls.Button ResetPasswordButton;
+
+        protected global::System.Web.UI.WebControls.Button CancelResetPasswordButton;
+
+        protected global::System.Web.UI.WebControls.Panel SalesDashboardPanel;
+
         /// <summary>
         /// UserDisplayName control.
         /// </summary>

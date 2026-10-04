@@ -17,7 +17,7 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             bool isAuthenticated = Context.User.Identity.IsAuthenticated;
 
             AccountToolbar.Visible = isAuthenticated && !isLoginPage;
-            TrackerSidebar.Visible = AccountToolbar.Visible;
+            TrackerSidebar.Visible = false;
 
             if (isDefaultPage)
             {
@@ -43,14 +43,30 @@ namespace ENTREP_Cafeteria_Food_Tracker_MANAGEMENT_SYSTEM
             if (AccountToolbar.Visible)
             {
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["CafeteriaFoodTrackerDB"].ConnectionString))
-                using (SqlCommand command = new SqlCommand("SELECT DisplayName FROM AppUsers WHERE Username = @Username AND IsActive = 1", connection))
+                using (SqlCommand command = new SqlCommand("SELECT DisplayName, IsAdmin FROM AppUsers WHERE Username = @Username AND IsActive = 1", connection))
                 {
                     command.Parameters.AddWithValue("@Username", Context.User.Identity.Name);
                     connection.Open();
-                    object result = command.ExecuteScalar();
-                    string displayName = result == null || result == DBNull.Value
-                        ? Context.User.Identity.Name
-                        : Convert.ToString(result);
+                    string displayName;
+                    bool isAdmin = false;
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            displayName = Convert.ToString(reader["DisplayName"]);
+                            isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
+                        }
+                        else
+                        {
+                            displayName = Context.User.Identity.Name;
+                        }
+                    }
+                    if (string.IsNullOrWhiteSpace(displayName))
+                    {
+                        displayName = Context.User.Identity.Name;
+                    }
+
+                    TrackerSidebar.Visible = AccountToolbar.Visible && !isAdmin;
 
                     AuthenticatedUserName.Text = Server.HtmlEncode(displayName);
                     SidebarUserName.Text = Server.HtmlEncode(displayName);

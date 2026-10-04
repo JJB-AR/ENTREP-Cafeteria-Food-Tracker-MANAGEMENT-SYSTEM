@@ -13,7 +13,7 @@
     </asp:PlaceHolder>
 
     <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" runat="server" />
-    <link href="~/Content/Site.css?v=dashboard-layout-3" rel="stylesheet" type="text/css" runat="server" />
+    <link href="~/Content/Site.css?v=dashboard-header-inline-1" rel="stylesheet" type="text/css" runat="server" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
 </head>
