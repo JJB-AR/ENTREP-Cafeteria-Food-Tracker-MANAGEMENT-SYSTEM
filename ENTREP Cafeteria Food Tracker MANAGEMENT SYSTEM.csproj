@@ -159,6 +159,7 @@
     <Content Include="md\sql-schema-and-setup.md" />
     <Content Include="md\README.md" />
     <Content Include="md\data-layer-and-flows.md" />
+    <Content Include="README.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
